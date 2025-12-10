@@ -4,8 +4,10 @@
             <div class="header-top">
                 <h1>Daily Briefing - {{ lang === 'en' ? 'English News' : '中文报道' }}</h1>
                 <div class="lang-switcher">
-                    <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文</NuxtLink>
-                    <NuxtLink :to="`/en/${currentDate}`" class="lang-button" :class="{ active: lang === 'en' }">English</NuxtLink>
+                    <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
+                    </NuxtLink>
+                    <NuxtLink :to="`/en/${currentDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
+                    </NuxtLink>
                 </div>
             </div>
 
@@ -36,7 +38,8 @@
         </div>
 
         <div v-else-if="newsItems && newsItems.length > 0" class="news-list">
-            <article v-for="item in newsItems" :key="item.id" class="news-item" :class="{ expanded: isExpanded(item.id) }">
+            <article v-for="item in newsItems" :key="item.id" class="news-item"
+                :class="{ expanded: isExpanded(item.id) }">
                 <div class="news-summary" @click="toggleItem(item.id)">
                     <div class="summary-content">
                         <div class="news-header">
@@ -50,8 +53,10 @@
                             {{ formatTime(item.pub_date) }}
                         </time>
                         <div class="chevron">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
                     </div>
@@ -63,7 +68,7 @@
                             {{ lang === 'en' ? 'Read full article' : '阅读全文' }} →
                         </a>
                     </div>
-                    
+
                     <div v-if="item.google_rss_description" class="related-articles">
                         <h3>{{ lang === 'en' ? 'Related Articles:' : '相关报道:' }}</h3>
                         <div v-html="item.google_rss_description"></div>
@@ -159,11 +164,7 @@ const { data: newsItems, pending, error } = await useAsyncData(
 
         if (error) throw error
 
-        console.group(`Fetched ${data?.length} items from ${tableName} for date ${currentDate.value}`)
-        data?.forEach((item, index) => {
-            console.log(`Item ${index + 1}:`, { title: item.title, pub_date: item.pub_date })
-        })
-        console.groupEnd()
+        console.log(`Fetched ${data?.length} items from ${tableName} for date ${currentDate.value}`)
 
         return data as NewsItem[]
     },
@@ -237,9 +238,9 @@ h1 {
 }
 
 .lang-button.active {
-    background: #3498db;
+    background: #2980b9;
     color: white;
-    border-color: #3498db;
+    border-color: #2980b9;
 }
 
 .date-navigation {
