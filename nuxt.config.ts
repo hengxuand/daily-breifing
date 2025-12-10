@@ -26,7 +26,8 @@ export default defineNuxtConfig({
             const d = new Date(today)
             d.setDate(today.getDate() - i)
             const dateStr = d.toISOString().split('T')[0]
-            routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
+            routes.push(`/zh/${dateStr}`)
+            routes.push(`/en/${dateStr}`)
         }
         return routes
       })()
