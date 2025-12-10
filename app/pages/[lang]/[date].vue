@@ -31,14 +31,28 @@
             </div>
         </div>
 
+        <!-- Category Filter Bar -->
+        <div v-if="!pending && !error && categories.length > 0" class="category-filter">
+            <button @click="selectedCategory = null" class="filter-button"
+                :class="{ active: selectedCategory === null }">
+                {{ lang === 'en' ? 'All' : '全部' }}
+                <span class="count">{{ newsItems?.length || 0 }}</span>
+            </button>
+            <button v-for="category in categories" :key="category" @click="selectedCategory = category"
+                class="filter-button" :class="{ active: selectedCategory === category }">
+                {{ category }}
+                <span class="count">{{ getCategoryCount(category) }}</span>
+            </button>
+        </div>
+
         <div v-if="pending" class="loading">{{ lang === 'en' ? 'Loading news items...' : '加载新闻中...' }}</div>
 
         <div v-else-if="error" class="error">
             {{ lang === 'en' ? 'Error loading news:' : '加载新闻出错:' }} {{ error.message }}
         </div>
 
-        <div v-else-if="newsItems && newsItems.length > 0" class="news-list">
-            <article v-for="item in newsItems" :key="item.id" class="news-item"
+        <div v-else-if="filteredNewsItems && filteredNewsItems.length > 0" class="news-list">
+            <article v-for="item in filteredNewsItems" :key="item.id" class="news-item"
                 :class="{ expanded: isExpanded(item.id) }">
                 <div class="news-summary" @click="toggleItem(item.id)">
                     <div class="summary-content">
@@ -179,6 +193,33 @@ const formatTime = (dateString: string) => {
         hour: '2-digit',
         minute: '2-digit'
     })
+}
+
+// Category filtering
+const selectedCategory = ref<string | null>(null)
+
+// Extract unique categories from news items
+const categories = computed(() => {
+    if (!newsItems.value) return []
+    const uniqueCategories = new Set(
+        newsItems.value
+            .map(item => item.category)
+            .filter((cat): cat is string => cat !== null && cat !== '')
+    )
+    return Array.from(uniqueCategories).sort()
+})
+
+// Filter news items by selected category
+const filteredNewsItems = computed(() => {
+    if (!newsItems.value) return []
+    if (selectedCategory.value === null) return newsItems.value
+    return newsItems.value.filter(item => item.category === selectedCategory.value)
+})
+
+// Get count of items in a category
+const getCategoryCount = (category: string) => {
+    if (!newsItems.value) return 0
+    return newsItems.value.filter(item => item.category === category).length
 }
 
 // Expanded state
@@ -456,5 +497,54 @@ h1 {
     color: #7f8c8d;
     font-size: 0.875rem;
     margin-left: 0.5rem;
+}
+
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.filter-button {
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dcdfe6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-button:hover {
+    background: #e9ecef;
+    border-color: #3498db;
+}
+
+.filter-button.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.filter-button .count {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.filter-button.active .count {
+    background: rgba(255, 255, 255, 0.25);
 }
 </style>
