@@ -6,17 +6,23 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false
   },
+  routeRules: {
+    // Today's page: always fresh (SSR on every request)
+    '/:lang(en|zh)/:date(\\d{4}-\\d{2}-\\d{2})': { 
+      isr: 3600 // Revalidate every hour (3600 seconds)
+    }
+  },
   nitro: {
     prerender: {
-      crawlLinks: false, // Disable crawling to prevent infinite history generation
+      crawlLinks: false,
       routes: (() => {
-        // Generate historical archives (from Yesterday up to 30 days ago)
-        // Only Today is skipped so it remains dynamic (SSR/CSR)
+        // Pre-build only the last 7 days for faster initial deployment
+        // Other pages will be generated on-demand via ISR
         const routes = []
         const today = new Date()
         
-        // Start from i=1 (Yesterday)
-        for (let i = 1; i < 30; i++) {
+        // Pre-build last 7 days
+        for (let i = 1; i <= 7; i++) {
             const d = new Date(today)
             d.setDate(today.getDate() - i)
             const dateStr = d.toISOString().split('T')[0]
