@@ -30,8 +30,7 @@ const tempConfig = originalConfig.replace(
         const d = new Date()
         d.setDate(d.getDate() - 1)
         const dateStr = d.toISOString().split('T')[0]
-        routes.push(\`/zh/\${dateStr}\`)
-        routes.push(\`/en/\${dateStr}\`)`
+        routes.push(\`/zh/\${dateStr}\`, \`/en/\${dateStr}\`)`
 )
 
 try {
