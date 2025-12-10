@@ -2,7 +2,10 @@
     <div class="container">
         <div class="header">
             <div class="header-top">
-                <h1>Daily Briefing - {{ lang === 'en' ? 'English News' : '中文报道' }}</h1>
+                <div class="logo">
+                    <img src="~/assets/images/logo.png" alt="Daily Briefing" />
+                    <h1>Daily Briefing</h1>
+                </div>
                 <div class="lang-switcher">
                     <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
                     </NuxtLink>
@@ -56,20 +59,19 @@
                 :class="{ expanded: isExpanded(item.id) }">
                 <div class="news-summary" @click="toggleItem(item.id)">
                     <div class="summary-content">
-                        <div class="news-header">
+                        <h2>
                             <span v-if="item.category" class="category">{{ item.category }}</span>
-                            <span class="source">{{ item.source }}</span>
-                        </div>
-                        <h2>{{ item.title }}</h2>
+                            {{ item.title }}
+                        </h2>
                     </div>
                     <div class="summary-meta">
                         <time v-if="item.pub_date" :datetime="item.pub_date">
                             {{ formatTime(item.pub_date) }}
                         </time>
                         <div class="chevron">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                            <svg width="28" height="28" viewBox="0 0 20 20" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.5"
+                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
@@ -77,12 +79,6 @@
                 </div>
 
                 <div v-show="isExpanded(item.id)" class="news-details">
-                    <div v-if="item.google_link" class="original-link-wrapper">
-                        <a :href="item.google_link" target="_blank" class="original-link">
-                            {{ lang === 'en' ? 'Read full article' : '阅读全文' }} →
-                        </a>
-                    </div>
-
                     <div v-if="item.google_rss_description" class="related-articles">
                         <h3>{{ lang === 'en' ? 'Related Articles:' : '相关报道:' }}</h3>
                         <div v-html="item.google_rss_description"></div>
@@ -253,10 +249,22 @@ const isExpanded = (id: string) => expandedItems.value.has(id)
     margin-bottom: 1.5rem;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.logo img {
+    height: 48px;
+    width: auto;
+}
+
 h1 {
-    color: #2c3e50;
+    color: var(--color-text-primary);
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 2rem;
+    font-weight: 700;
 }
 
 .lang-switcher {
@@ -265,40 +273,41 @@ h1 {
 }
 
 .lang-button {
-    padding: 0.5rem 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
     text-decoration: none;
-    color: #2c3e50;
-    border: 1px solid #dcdfe6;
-    border-radius: 4px;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-sm);
     font-size: 0.9rem;
-    transition: all 0.2s;
+    transition: var(--transition-fast);
 }
 
 .lang-button:hover {
-    background: #f5f7fa;
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
 }
 
 .lang-button.active {
-    background: #2980b9;
+    background: var(--color-primary);
     color: white;
-    border-color: #2980b9;
+    border-color: var(--color-primary);
 }
 
 .date-navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--gradient-bg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .current-date {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--color-text-primary);
     text-align: center;
 }
 
@@ -307,12 +316,12 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
 }
 
 .today-link {
     font-size: 0.875rem;
-    color: #3498db;
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
 }
@@ -322,65 +331,71 @@ h1 {
 }
 
 .nav-button {
-    padding: 0.75rem 1.5rem;
-    background: #3498db;
+    padding: 0.75rem var(--spacing-lg);
+    background: var(--gradient-primary);
     color: white;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     font-weight: 500;
-    transition: background 0.2s;
+    transition: var(--transition-fast);
     white-space: nowrap;
+    box-shadow: var(--shadow-sm);
 }
 
 .nav-button:hover:not(.disabled) {
-    background: #2980b9;
+    background: var(--gradient-primary-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
 .nav-button.disabled {
-    background: #bdc3c7;
+    background: var(--color-disabled);
     cursor: not-allowed;
     pointer-events: none;
+    box-shadow: none;
 }
 
 .loading,
 .error,
 .empty {
-    padding: 2rem;
+    padding: var(--spacing-xl);
     text-align: center;
     font-size: 1.2rem;
 }
 
 .error {
-    color: #a93226;
-    background: #fadbd8;
-    border-radius: 8px;
+    color: var(--color-error);
+    background: var(--color-error-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-error-border);
 }
 
 .news-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--spacing-lg);
 }
 
 .news-item {
-    background: white;
-    border: 1px solid #e1e8ed;
-    border-radius: 8px;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    transition: var(--transition-fast);
 }
 
 .news-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-light);
 }
 
 .news-summary {
-    padding: 1.5rem;
+    padding: var(--spacing-lg);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 1rem;
+    gap: var(--spacing-md);
 }
 
 .summary-content {
@@ -390,18 +405,18 @@ h1 {
 .summary-meta {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    color: #95a5a6;
-    font-size: 0.875rem;
+    gap: var(--spacing-md);
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
     white-space: nowrap;
-    padding-top: 0.25rem;
+    padding-top: var(--spacing-xs);
 }
 
 .chevron {
-    transition: transform 0.3s ease;
+    transition: var(--transition-smooth);
     display: flex;
     align-items: center;
-    color: #95a5a6;
+    color: var(--color-text-muted);
 }
 
 .news-item.expanded .chevron {
@@ -409,142 +424,123 @@ h1 {
 }
 
 .news-details {
-    padding: 0 1.5rem 1.5rem 1.5rem;
-    border-top: 1px solid #f0f2f5;
-    background: #fcfdfd;
-}
-
-.news-header {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.category {
-    background: #3498db;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-weight: 600;
-}
-
-.source {
-    color: #7f8c8d;
+    padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    border-top: 1px solid var(--color-border-secondary);
+    background: var(--color-bg-detail);
 }
 
 .news-item h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
     margin: 0;
     font-size: 1.25rem;
-    line-height: 1.4;
-    color: #2c3e50;
+    line-height: 1.6;
+    color: var(--color-text-primary);
 }
 
-.original-link-wrapper {
-    margin: 1rem 0;
-}
-
-.original-link {
-    display: inline-block;
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-}
-
-.original-link:hover {
-    text-decoration: underline;
+.news-item h2 .category {
+    background: var(--gradient-primary);
+    color: white;
+    padding: var(--spacing-xs) 0.75rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
 }
 
 .related-articles {
-    margin: 1rem 0 0 0;
-    padding: 1rem;
-    background: white;
-    border: 1px solid #e1e8ed;
-    border-radius: 6px;
+    margin: var(--spacing-md) 0 0 0;
+    padding: var(--spacing-md);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-md);
 }
 
 .related-articles h3 {
     margin: 0 0 0.75rem 0;
     font-size: 1rem;
-    color: #555;
+    color: var(--color-text-secondary);
     font-weight: 600;
 }
 
 .related-articles :deep(ol) {
     margin: 0;
-    padding-left: 1.5rem;
+    padding-left: var(--spacing-lg);
     list-style: decimal;
 }
 
 .related-articles :deep(li) {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-sm);
     line-height: 1.6;
 }
 
 .related-articles :deep(a) {
-    color: #2980b9;
+    color: var(--color-primary-dark);
     text-decoration: none;
     font-weight: 500;
 }
 
 .related-articles :deep(a:hover) {
-    color: #3498db;
+    color: var(--color-primary);
     text-decoration: underline;
 }
 
 .related-articles :deep(font) {
-    color: #7f8c8d;
+    color: var(--color-text-tertiary);
     font-size: 0.875rem;
-    margin-left: 0.5rem;
+    margin-left: var(--spacing-sm);
 }
 
 .category-filter {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    padding: 1.5rem;
-    background: white;
-    border: 1px solid #e1e8ed;
-    border-radius: 8px;
-    margin-bottom: 2rem;
+    padding: var(--spacing-lg);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
 }
 
 .filter-button {
-    padding: 0.5rem 1rem;
-    background: #f8f9fa;
-    border: 1px solid #dcdfe6;
-    border-radius: 6px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-md);
     font-size: 0.9rem;
     font-weight: 500;
-    color: #2c3e50;
+    color: var(--color-text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: var(--transition-fast);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
 }
 
 .filter-button:hover {
-    background: #e9ecef;
-    border-color: #3498db;
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
 }
 
 .filter-button.active {
-    background: #3498db;
+    background: var(--gradient-primary);
     color: white;
-    border-color: #3498db;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .filter-button .count {
-    background: rgba(0, 0, 0, 0.1);
-    padding: 0.125rem 0.5rem;
-    border-radius: 12px;
+    background: var(--opacity-overlay);
+    padding: 0.125rem var(--spacing-sm);
+    border-radius: var(--radius-full);
     font-size: 0.8rem;
     font-weight: 600;
 }
 
 .filter-button.active .count {
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--opacity-overlay-light);
 }
 </style>
