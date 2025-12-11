@@ -543,4 +543,143 @@ h1 {
 .filter-button.active .count {
     background: var(--opacity-overlay-light);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header-top {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .logo {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .logo img {
+        height: 36px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .lang-switcher {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lang-button {
+        flex: 1;
+        text-align: center;
+    }
+
+    .date-navigation {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: var(--spacing-md);
+    }
+
+    .nav-button {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem var(--spacing-md);
+    }
+
+    .center-group {
+        order: -1;
+        width: 100%;
+    }
+
+    .current-date {
+        font-size: 1.1rem;
+    }
+
+    .category-filter {
+        gap: 0.5rem;
+        padding: var(--spacing-md);
+    }
+
+    .filter-button {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .news-summary {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+
+    .summary-meta {
+        width: 100%;
+        justify-content: space-between;
+        padding-top: 0;
+    }
+
+    .news-item h2 {
+        font-size: 1.1rem;
+    }
+
+    .news-item h2 .category {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .news-details {
+        padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+    }
+
+    .related-articles {
+        padding: var(--spacing-sm);
+    }
+
+    .related-articles h3 {
+        font-size: 0.9rem;
+    }
+
+    .related-articles :deep(li) {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.75rem;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    .logo img {
+        height: 32px;
+    }
+
+    .current-date {
+        font-size: 1rem;
+    }
+
+    .news-item h2 {
+        font-size: 1rem;
+    }
+
+    .summary-meta {
+        font-size: 1rem;
+    }
+
+    .filter-button {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.6rem;
+    }
+
+    .filter-button .count {
+        font-size: 0.75rem;
+    }
+}
 </style>
