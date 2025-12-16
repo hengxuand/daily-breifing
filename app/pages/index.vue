@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+
 // Detect browser language and redirect accordingly
 const getBrowserLanguage = () => {
     if (typeof navigator !== 'undefined') {
@@ -9,14 +11,16 @@ const getBrowserLanguage = () => {
         }
     }
     // Default to Chinese if no match found
+    console.warn('No matching language found, defaulting to Chinese')
     return 'zh'
 }
 
-// Redirect to today's date
-const d = new Date()
-const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-const browserLang = getBrowserLanguage()
-navigateTo(`/${browserLang}/${today}`, { replace: true, external: false })
+onMounted(() => {
+    const d = new Date()
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    const browserLang = getBrowserLanguage()
+    navigateTo(`/${browserLang}/${today}`, { replace: true, external: false })
+})
 </script>
 
 <template>
