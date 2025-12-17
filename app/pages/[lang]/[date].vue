@@ -61,8 +61,9 @@
                     <div class="summary-content">
                         <h2>
                             <span v-if="item.category" class="category">{{ item.category }}</span>
-                            {{ item.title }}
+                            {{ item.source }}
                         </h2>
+                        <h2 class="title">{{ item.title }}</h2>
                     </div>
                     <div class="summary-meta">
                         <time v-if="item.pub_date" :datetime="item.pub_date">
@@ -400,6 +401,13 @@ h1 {
 
 .summary-content {
     flex: 1;
+}
+
+.summary-content h2.title {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    margin-top: var(--spacing-md);
 }
 
 .summary-meta {
