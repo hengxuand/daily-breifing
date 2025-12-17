@@ -3,8 +3,8 @@
         <div class="header">
             <div class="header-top">
                 <div class="logo">
-                    <img src="~/assets/images/logo.png" alt="Daily Briefing" />
-                    <h1>Daily Briefing</h1>
+                    <img src="~/assets/images/logo.png" alt="Happened.info" />
+                    <h1>Happened.info</h1>
                 </div>
                 <div class="lang-switcher">
                     <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文

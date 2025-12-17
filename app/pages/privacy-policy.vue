@@ -1,8 +1,8 @@
 <script setup lang="ts">
 useHead({
-    title: 'Privacy Policy - Daily Briefing',
+    title: 'Privacy Policy - Happened.info',
     meta: [
-        { name: 'description', content: 'Privacy policy for Daily Briefing news aggregation service' }
+        { name: 'description', content: 'Privacy policy for Happened.info news aggregation service' }
     ]
 })
 </script>
@@ -16,7 +16,7 @@ useHead({
 
             <section>
                 <h2>Information We Collect</h2>
-                <p>Daily Briefing is a news aggregation service that respects your privacy. We collect minimal
+                <p>Happened.info is a news aggregation service that respects your privacy. We collect minimal
                     information necessary to provide our service:</p>
                 <ul>
                     <li><strong>Language Preference:</strong> Your choice between Chinese and English news feeds</li>
@@ -109,7 +109,7 @@ useHead({
                 <h2>Contact Us</h2>
                 <p>If you have questions about this privacy policy or our data practices, please contact us:</p>
                 <ul>
-                    <li>Email: privacy@daily-briefing.com</li>
+                    <li>Email: privacy@happened.info</li>
                     <li>GitHub: Create an issue in our repository</li>
                 </ul>
             </section>
