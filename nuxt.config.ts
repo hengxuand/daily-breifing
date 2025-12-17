@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/theme.css'],
   app: {
     head: {
-      title: 'Daily Briefing',
+      title: 'Happened.info',
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon.png' }
       ]
