@@ -43,7 +43,7 @@
             </button>
             <button v-for="category in categories" :key="category" @click="selectedCategory = category"
                 class="filter-button" :class="{ active: selectedCategory === category }">
-                {{ category }}
+                {{ translateTopic(category) }}
                 <span class="count">{{ getCategoryCount(category) }}</span>
             </button>
         </div>
@@ -60,7 +60,7 @@
                 <div class="news-summary" @click="toggleItem(item.id)">
                     <div class="summary-content">
                         <h2>
-                            <span v-if="item.topic" class="category">{{ item.topic }}</span>
+                            <span v-if="item.topic" class="category">{{ translateTopic(item.topic) }}</span>
                             {{ item.source }}
                         </h2>
                         <h2 class="title">{{ item.title }}</h2>
@@ -108,11 +108,31 @@ interface NewsItem {
     created_at: string
 }
 
+// Topic translation map
+const TOPIC_MAP_ZH: Record<string, string> = {
+    WORLD: "世界",
+    NATION: "国家",
+    BUSINESS: "商业",
+    TECHNOLOGY: "科技",
+    ENTERTAINMENT: "娱乐",
+    SCIENCE: "科学",
+    SPORTS: "体育",
+    HEALTH: "健康",
+}
+
 const route = useRoute()
 const supabase = useSupabaseClient()
 
 // Get language from route param
 const lang = computed(() => (route.params.lang === 'en' ? 'en' : 'zh'))
+
+// Translate topic name based on language
+const translateTopic = (topic: string) => {
+    if (lang.value === 'zh' && TOPIC_MAP_ZH[topic]) {
+        return TOPIC_MAP_ZH[topic]
+    }
+    return topic
+}
 
 // Get the date from the route parameter
 const currentDate = computed(() => route.params.date as string)
