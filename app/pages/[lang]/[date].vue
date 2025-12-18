@@ -61,7 +61,7 @@
                     <div class="summary-content">
                         <h2>
                             <span v-if="item.topic" class="category">{{ translateTopic(item.topic) }}</span>
-                            {{ item.source }}
+                            <span class="source">{{ item.source }}</span>
                         </h2>
                         <h2 class="title">{{ item.title }}</h2>
                     </div>
@@ -474,6 +474,12 @@ h1 {
     font-weight: 600;
     font-size: 0.875rem;
     flex-shrink: 0;
+}
+
+.news-item h2 .source {
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
 }
 
 .related-articles {
