@@ -16,7 +16,10 @@ export default defineNuxtConfig({
     redirect: false
   },
   routeRules: {
-    // Today's page: always fresh (SSR on every request)
+    // Date pages with ISR (Incremental Static Regeneration)
+    '/:date(\\d{4}-\\d{2}-\\d{2})': { 
+      isr: 3600 // Revalidate every hour (3600 seconds)
+    },
     '/:lang(en|zh)/:date(\\d{4}-\\d{2}-\\d{2})': { 
       isr: 3600 // Revalidate every hour (3600 seconds)
     }
@@ -30,12 +33,12 @@ export default defineNuxtConfig({
         const routes = []
         const today = new Date()
         
-        // Pre-build last 7 days
-        for (let i = 1; i <= 7; i++) {
+        // Pre-build last 7 days for both-language view
+        for (let i = 0; i <= 7; i++) {
             const d = new Date(today)
             d.setDate(today.getDate() - i)
             const dateStr = d.toISOString().split('T')[0]
-            routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
+            routes.push(`/${dateStr}`)
         }
         return routes
       })()

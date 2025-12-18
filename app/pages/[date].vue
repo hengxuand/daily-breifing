@@ -19,21 +19,21 @@
             </div>
 
             <div class="date-navigation">
-                <NuxtLink :to="`/${lang}/${previousDate}`" class="nav-button">
-                    {{ lang === 'en' ? '← Previous Day' : '← 前一天' }}
+                <NuxtLink :to="getNavigationUrl(previousDate)" class="nav-button">
+                    {{ 'Previous Day' }}
                 </NuxtLink>
 
                 <div class="center-group">
                     <div class="current-date">
                         {{ formattedCurrentDate }}
                     </div>
-                    <NuxtLink v-if="!isToday" :to="`/${lang}/${todayDate}`" class="today-link">
-                        {{ lang === 'en' ? 'Jump to Today' : '回到今天' }}
+                    <NuxtLink v-if="!isToday" :to="getNavigationUrl(todayDate)" class="today-link">
+                        Jump to Today
                     </NuxtLink>
                 </div>
 
-                <NuxtLink :to="`/${lang}/${nextDate}`" class="nav-button" :class="{ disabled: isToday }">
-                    {{ lang === 'en' ? 'Next Day →' : '后一天 →' }}
+                <NuxtLink :to="getNavigationUrl(nextDate)" class="nav-button" :class="{ disabled: isToday }">
+                    Next Day →
                 </NuxtLink>
             </div>
         </div>
@@ -42,7 +42,7 @@
         <div v-if="!pending && !error && categories.length > 0" class="category-filter">
             <button @click="selectedCategory = null" class="filter-button"
                 :class="{ active: selectedCategory === null }">
-                {{ lang === 'en' ? 'All' : '全部' }}
+                All
                 <span class="count">{{ newsItems?.length || 0 }}</span>
             </button>
             <button v-for="category in categories" :key="category" @click="selectedCategory = category"
@@ -52,10 +52,10 @@
             </button>
         </div>
 
-        <div v-if="pending" class="loading">{{ lang === 'en' ? 'Loading news items...' : '加载新闻中...' }}</div>
+        <div v-if="pending" class="loading">Loading news items...</div>
 
         <div v-else-if="error" class="error">
-            {{ lang === 'en' ? 'Error loading news:' : '加载新闻出错:' }} {{ error.message }}
+            Error loading news: {{ error.message }}
         </div>
 
         <div v-else-if="filteredNewsItems && filteredNewsItems.length > 0" class="news-list">
@@ -85,7 +85,7 @@
 
                 <div v-show="isExpanded(item.id)" class="news-details">
                     <div v-if="item.description" class="related-articles">
-                        <h3>{{ lang === 'en' ? 'Related Articles:' : '相关报道:' }}</h3>
+                        <h3>Related Articles:</h3>
                         <div v-html="item.description"></div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
         </div>
 
         <div v-else class="empty">
-            {{ lang === 'en' ? 'No news items found for this date.' : '当天没有新闻' }}
+            No news items found for this date.
         </div>
     </div>
 </template>
@@ -114,17 +114,21 @@ interface NewsItem {
 
 const route = useRoute()
 const supabase = useSupabaseClient()
-
 const router = useRouter()
-
-// Get language from route param (for backwards compatibility with URLs)
-const lang = computed(() => (route.params.lang === 'en' ? 'en' : 'zh'))
 
 // Get the date from the route parameter
 const currentDate = computed(() => route.params.date as string)
 
-// Multi-select language filter - initialize from route param (single language)
-const selectedLanguages = ref<Set<string>>(new Set([lang.value]))
+// Multi-select language filter - initialize from URL query or default to both
+const initializeLanguages = () => {
+    const langQuery = route.query.lang as string | undefined
+    if (langQuery) {
+        const langs = langQuery.split(',')
+        return new Set(langs.filter(l => l === 'zh' || l === 'en'))
+    }
+    return new Set(['zh', 'en'])
+}
+const selectedLanguages = ref<Set<string>>(initializeLanguages())
 
 const toggleLanguage = (language: string) => {
     if (selectedLanguages.value.has(language)) {
@@ -139,7 +143,7 @@ const toggleLanguage = (language: string) => {
     // Trigger reactivity
     selectedLanguages.value = new Set(selectedLanguages.value)
 
-    // Navigate to appropriate URL format
+    // Update URL based on language selection
     const langArray = Array.from(selectedLanguages.value).sort()
     if (langArray.length === 2) {
         // Both languages selected - use /date format
@@ -147,6 +151,17 @@ const toggleLanguage = (language: string) => {
     } else {
         // Single language selected - use /lang/date format
         router.push(`/${langArray[0]}/${currentDate.value}`)
+    }
+}
+
+// Helper to generate navigation URLs based on current language selection
+const getNavigationUrl = (date: string | undefined) => {
+    if (!date) return '/'
+    const langArray = Array.from(selectedLanguages.value).sort()
+    if (langArray.length === 2) {
+        return `/${date}`
+    } else {
+        return `/${langArray[0]}/${date}`
     }
 }
 
@@ -176,23 +191,20 @@ const nextDate = computed(() => {
 
 // Format the current date for display
 const formattedCurrentDate = computed(() => {
-    // Parse as UTC by appending 'Z'
     const date = new Date(currentDate.value + 'T00:00:00Z')
-    return date.toLocaleDateString(lang.value === 'en' ? 'en-US' : 'zh-CN', {
+    return date.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        timeZone: 'UTC' // Force UTC display to match the canonical content
+        timeZone: 'UTC'
     })
 })
 
 // Fetch news items for the selected date
 const { data: newsItems, pending, error } = await useAsyncData(
-    `news-items-${currentDate.value}-${lang.value}`,
+    `news-items-${currentDate.value}-both`,
     async () => {
-        // Get start and end of the day in UTC (Canonical Timezone)
-        // This ensures consistent Static Site Generation (SSG) results regardless of server/client location
         const startOfDay = `${currentDate.value}T00:00:00.000Z`
         const endOfDay = `${currentDate.value}T23:59:59.999Z`
 
@@ -313,6 +325,8 @@ h1 {
     border-radius: var(--radius-sm);
     font-size: 0.9rem;
     transition: var(--transition-fast);
+    background: transparent;
+    cursor: pointer;
 }
 
 .lang-button:hover {
