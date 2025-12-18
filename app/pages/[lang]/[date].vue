@@ -7,14 +7,10 @@
                     <h1>Happened.info</h1>
                 </div>
                 <div class="lang-switcher">
-                    <button @click="toggleLanguage('zh')" class="lang-button"
-                        :class="{ active: selectedLanguages.has('zh') }">
-                        中文
-                    </button>
-                    <button @click="toggleLanguage('en')" class="lang-button"
-                        :class="{ active: selectedLanguages.has('en') }">
-                        English
-                    </button>
+                    <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
+                    </NuxtLink>
+                    <NuxtLink :to="`/en/${currentDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
+                    </NuxtLink>
                 </div>
             </div>
 
@@ -115,40 +111,11 @@ interface NewsItem {
 const route = useRoute()
 const supabase = useSupabaseClient()
 
-const router = useRouter()
-
-// Get language from route param (for backwards compatibility with URLs)
+// Get language from route param
 const lang = computed(() => (route.params.lang === 'en' ? 'en' : 'zh'))
 
 // Get the date from the route parameter
 const currentDate = computed(() => route.params.date as string)
-
-// Multi-select language filter - initialize from route param (single language)
-const selectedLanguages = ref<Set<string>>(new Set([lang.value]))
-
-const toggleLanguage = (language: string) => {
-    if (selectedLanguages.value.has(language)) {
-        selectedLanguages.value.delete(language)
-        // If all languages are deselected, select all
-        if (selectedLanguages.value.size === 0) {
-            selectedLanguages.value = new Set(['zh', 'en'])
-        }
-    } else {
-        selectedLanguages.value.add(language)
-    }
-    // Trigger reactivity
-    selectedLanguages.value = new Set(selectedLanguages.value)
-
-    // Navigate to appropriate URL format
-    const langArray = Array.from(selectedLanguages.value).sort()
-    if (langArray.length === 2) {
-        // Both languages selected - use /date format
-        router.push(`/${currentDate.value}`)
-    } else {
-        // Single language selected - use /lang/date format
-        router.push(`/${langArray[0]}/${currentDate.value}`)
-    }
-}
 
 // Get today's date in local time
 const todayDate = computed(() => {
@@ -196,13 +163,12 @@ const { data: newsItems, pending, error } = await useAsyncData(
         const startOfDay = `${currentDate.value}T00:00:00.000Z`
         const endOfDay = `${currentDate.value}T23:59:59.999Z`
 
-        const languages = Array.from(selectedLanguages.value)
-        console.log(`Querying google_news_rss (languages: ${languages.join(', ')}) -> Range: ${startOfDay} to ${endOfDay}`)
+        console.log(`Querying google_news_rss (language: ${lang.value}) -> Range: ${startOfDay} to ${endOfDay}`)
 
         const { data, error } = await supabase
             .from('google_news_rss')
             .select('*')
-            .in('language', languages)
+            .eq('language', lang.value)
             .gte('pub_date', startOfDay)
             .lte('pub_date', endOfDay)
             .order('pub_date', { ascending: false })
@@ -212,7 +178,7 @@ const { data: newsItems, pending, error } = await useAsyncData(
         return data as NewsItem[]
     },
     {
-        watch: [currentDate, selectedLanguages]
+        watch: [currentDate, lang]
     }
 )
 
