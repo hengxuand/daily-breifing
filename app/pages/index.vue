@@ -10,9 +10,9 @@ const getBrowserLanguage = () => {
             if (lang.startsWith('en')) return 'en'
         }
     }
-    // Default to Chinese if no match found
-    console.warn('No matching language found, defaulting to Chinese')
-    return 'zh'
+    // Default to English if no match found
+    console.warn('No matching language found, defaulting to English')
+    return 'en'
 }
 
 onMounted(() => {
