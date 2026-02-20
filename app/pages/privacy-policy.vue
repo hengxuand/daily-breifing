@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import Footer from '~/components/Footer.vue'
+
+// Ensure your site URL is correct for the canonical link
+const siteUrl = 'https://happened.info'
+const lastUpdatedDate = 'February 19, 2026'
+
 useHead({
     title: 'Privacy Policy - Happened.info',
+    link: [
+        { rel: 'canonical', href: `${siteUrl}/privacy-policy` }
+    ],
     meta: [
-        { name: 'description', content: 'Privacy policy for Happened.info news aggregation service' }
+        { name: 'description', content: 'Privacy policy for Happened.info news aggregation service. Learn how we handle your data in compliance with 2026 standards.' },
+        { name: 'robots', content: 'noindex, follow' } // Standard practice for legal pages
     ]
 })
 </script>
@@ -11,167 +21,136 @@ useHead({
     <div class="privacy-policy">
         <div class="container">
             <h1>Privacy Policy</h1>
-
-            <p class="last-updated">Last updated: {{ new Date().toLocaleDateString() }}</p>
+            <p class="last-updated">Last updated: {{ lastUpdatedDate }}</p>
 
             <section>
-                <h2>Information We Collect</h2>
-                <p>Happened.info is a news aggregation service that respects your privacy. We collect minimal
-                    information necessary to provide our service:</p>
+                <h2>1. Introduction</h2>
+                <p>Happened.info ("we," "our," or "us") is a news aggregation service. We respect your privacy and are committed to protecting it through our compliance with this policy. This policy describes the types of information we may collect from you or that you may provide when you visit Happened.info.</p>
+            </section>
+
+            <section>
+                <h2>2. Information We Collect</h2>
+                <p>We collect minimal information to provide and improve our service:</p>
                 <ul>
-                    <li><strong>Language Preference:</strong> Your choice between Chinese and English news feeds</li>
-                    <li><strong>Usage Data:</strong> Anonymous analytics to improve our service (page views, session
-                        duration)</li>
-                    <li><strong>Technical Data:</strong> Browser type, device information, and IP address (anonymized)
-                    </li>
+                    <li><strong>Language Preference:</strong> We store your choice between Chinese and English news feeds to provide a consistent experience.</li>
+                    <li><strong>Technical Data:</strong> Like most websites, we collect anonymous data such as IP addresses (anonymized), browser type, and device information to ensure site security and performance.</li>
+                    <li><strong>Usage Data:</strong> We use anonymous analytics to understand page views and session duration. This data cannot be used to identify you personally.</li>
                 </ul>
             </section>
 
             <section>
-                <h2>How We Use Your Information</h2>
+                <h2>3. Data Sources & External Links</h2>
+                <p>Happened.info aggregates headlines and links from public RSS feeds. Our service functions as a directory:</p>
                 <ul>
-                    <li>To provide personalized news content in your preferred language</li>
-                    <li>To improve our service performance and user experience</li>
-                    <li>To analyze usage patterns and optimize content delivery</li>
-                    <li>To ensure security and prevent abuse of our service</li>
+                    <li>We only store the <strong>news title</strong> and the <strong>original source URL</strong>.</li>
+                    <li>When you click a headline, you are directed to the original publisher's website.</li>
+                    <li>We are not responsible for the privacy practices or content of these third-party websites. We encourage you to read the privacy policies of any site you visit.</li>
                 </ul>
             </section>
 
             <section>
-                <h2>Data Sources</h2>
-                <p>Our service aggregates news content from publicly available sources. We do not:</p>
+                <h2>4. Data Retention</h2>
+                <p>In compliance with 2026 privacy standards, we disclose our retention periods:</p>
                 <ul>
-                    <li>Store personal news reading preferences beyond language choice</li>
-                    <li>Track individual articles you read</li>
-                    <li>Create personal profiles based on your reading habits</li>
+                    <li><strong>Preference Data:</strong> Your language settings are stored in your browser's local storage and remain until you clear your cache.</li>
+                    <li><strong>Analytics Data:</strong> Anonymous technical logs are retained for a maximum of 12 months before being aggregated or deleted.</li>
                 </ul>
             </section>
 
             <section>
-                <h2>Third-Party Services</h2>
-                <p>We may use the following third-party services:</p>
+                <h2>5. California Privacy Rights (CCPA/CPRA)</h2>
+                <p>If you are a California resident, you have specific rights regarding your personal information:</p>
                 <ul>
-                    <li><strong>Analytics:</strong> Anonymous usage tracking to understand how our service is used</li>
-                    <li><strong>Content Delivery:</strong> News content from various public news sources</li>
-                    <li><strong>Hosting:</strong> Cloud infrastructure providers for service delivery</li>
+                    <li><strong>Right to Know:</strong> You can request to know what categories of data we have collected.</li>
+                    <li><strong>Right to Delete:</strong> You can request that we delete the minimal data we hold.</li>
+                    <li><strong>Right to Correct:</strong> You have the right to request that we correct inaccurate information (e.g., if your language preference is incorrectly saved).</li>
+                    <li><strong>Right to Opt-Out:</strong> We do not "sell" your data. However, we honor <strong>Global Privacy Control (GPC)</strong> signals. If your browser sends a GPC signal, we automatically opt you out of any non-essential analytics tracking.</li>
                 </ul>
             </section>
 
             <section>
-                <h2>Data Storage and Security</h2>
+                <h2>6. Cookies and Local Storage</h2>
+                <p>We use essential local storage to remember your language choice. We do not use "tracking cookies" for cross-site advertising. You can manage or disable these through your browser settings, though some features of the site may not function correctly without them.</p>
+            </section>
+
+            <section>
+                <h2>7. Children's Privacy</h2>
+                <p>Our service is a general audience news aggregator and is not directed to children under the age of 13. We do not knowingly collect personal information from children.</p>
+            </section>
+
+            <section>
+                <h2>8. Contact Us</h2>
+                <p>To exercise your privacy rights or ask questions, please contact us via the following methods:</p>
                 <ul>
-                    <li>Data is stored securely using industry-standard encryption</li>
-                    <li>We retain data only as long as necessary to provide our service</li>
-                    <li>Access to personal data is restricted to authorized personnel only</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>Your Rights</h2>
-                <p>You have the right to:</p>
-                <ul>
-                    <li>Access information we hold about you</li>
-                    <li>Request deletion of your data</li>
-                    <li>Opt-out of analytics tracking</li>
-                    <li>Change your language preferences at any time</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>Cookies and Local Storage</h2>
-                <p>We use minimal cookies and local storage for:</p>
-                <ul>
-                    <li>Remembering your language preference</li>
-                    <li>Basic session management</li>
-                    <li>Anonymous analytics tracking</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>Children's Privacy</h2>
-                <p>Our service is not directed to children under 13. We do not knowingly collect personal information
-                    from children under 13.</p>
-            </section>
-
-            <section>
-                <h2>International Users</h2>
-                <p>Our service may be accessed globally. Data processing follows applicable international privacy laws
-                    and regulations.</p>
-            </section>
-
-            <section>
-                <h2>Changes to This Policy</h2>
-                <p>We may update this privacy policy from time to time. We will notify users of significant changes by
-                    updating the date at the top of this policy.</p>
-            </section>
-
-            <section>
-                <h2>Contact Us</h2>
-                <p>If you have questions about this privacy policy or our data practices, please contact us:</p>
-                <ul>
-                    <li>Email: privacy@happened.info</li>
-                    <li>GitHub: Create an issue in our repository</li>
+                    <li><strong>Email:</strong> privacy@happened.info</li>
+                    <li><strong>GitHub:</strong> Open an issue in our official repository for public transparency.</li>
                 </ul>
             </section>
         </div>
     </div>
+
+    <Footer />
 </template>
 
 <style scoped>
 .privacy-policy {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 2rem;
-    line-height: 1.6;
+    padding: 3rem 1.5rem;
+    line-height: 1.7;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .container {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
 }
 
 h1 {
-    color: #2c3e50;
+    color: #1a1a1a;
     margin-bottom: 0.5rem;
     font-size: 2.5rem;
+    font-weight: 800;
 }
 
 h2 {
-    color: #34495e;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-    border-bottom: 2px solid #ecf0f1;
+    color: #2c3e50;
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem;
+    border-bottom: 1px solid #eee;
     padding-bottom: 0.5rem;
 }
 
 .last-updated {
-    color: #7f8c8d;
-    font-style: italic;
-    margin-bottom: 2rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+    display: block;
 }
 
 section {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 ul {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    margin-top: 1rem;
 }
 
 li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 p {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 strong {
-    color: #2c3e50;
+    color: #000;
 }
 
 @media (max-width: 768px) {
@@ -185,10 +164,6 @@ strong {
 
     h1 {
         font-size: 2rem;
-    }
-
-    h2 {
-        font-size: 1.3rem;
     }
 }
 </style>
