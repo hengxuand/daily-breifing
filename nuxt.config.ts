@@ -13,11 +13,13 @@ export default defineNuxtConfig({
     }
   },
   supabase: {
-    redirect: false
+    redirect: false,
+    url: process.env.SUPABASE_URL || 'https://pmpfhubylpukgdbzwvpy.supabase.co',
+    key: process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtcGZodWJ5bHB1a2dkYnp3dnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwOTg1MjMsImV4cCI6MjA3OTY3NDUyM30.REWKSCKdZZTG_F9SEYaJzU5uflBDbqqz0WUtcaMYh8M'
   },
   routeRules: {
     // Today's page: always fresh (SSR on every request)
-    '/:lang(en|zh)/:date(\\d{4}-\\d{2}-\\d{2})': { 
+    '/:lang(en|zh)/:date(\\d{4}-\\d{2}-\\d{2})': {
       isr: 3600 // Revalidate every hour (3600 seconds)
     }
   },
@@ -29,13 +31,13 @@ export default defineNuxtConfig({
         // Other pages will be generated on-demand via ISR
         const routes = []
         const today = new Date()
-        
+
         // Pre-build last 7 days
         for (let i = 1; i <= 7; i++) {
-            const d = new Date(today)
-            d.setDate(today.getDate() - i)
-            const dateStr = d.toISOString().split('T')[0]
-            routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
+          const d = new Date(today)
+          d.setDate(today.getDate() - i)
+          const dateStr = d.toISOString().split('T')[0]
+          routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
         }
         return routes
       })()
