@@ -7,6 +7,7 @@ import { Analytics } from '@vercel/analytics/nuxt'
   <div>
     <NuxtPage />
     <Footer />
+    <CookieBanner />
     <SpeedInsights />
     <Analytics />
   </div>
