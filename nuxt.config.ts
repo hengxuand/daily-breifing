@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/supabase'],
   css: ['~/assets/css/theme.css'],
+  runtimeConfig: {
+    public: {
+      siteUrl: 'https://happened.info',
+      // NOTE: Update this date whenever terms-of-service.vue or privacy-policy.vue are modified.
+      legalLastUpdated: 'February 21, 2026'
+    }
+  },
   app: {
     head: {
       title: 'Happened.info',

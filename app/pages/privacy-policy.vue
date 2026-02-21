@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import Footer from '~/components/Footer.vue'
-
-// Ensure your site URL is correct for the canonical link
-const siteUrl = 'https://happened.info'
-const lastUpdatedDate = 'February 19, 2026'
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
+const lastUpdatedDate = config.public.legalLastUpdated
 
 useHead({
     title: 'Privacy Policy - Happened.info',
@@ -89,7 +87,6 @@ useHead({
         </div>
     </div>
 
-    <Footer />
 </template>
 
 <style scoped>
