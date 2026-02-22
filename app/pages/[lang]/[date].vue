@@ -46,6 +46,22 @@
                 {{ translateTopic(category) }}
                 <span class="count">{{ getCategoryCount(category) }}</span>
             </button>
+            <div class="search-box">
+                <input
+                    v-model="searchQuery"
+                    type="text"
+                    class="search-input"
+                    :class="{ 'has-value': searchQuery.length > 0 }"
+                    placeholder="Search"
+                    aria-label="Search"
+                />
+                <button
+                    v-if="searchQuery.length > 0"
+                    class="search-clear"
+                    @click="searchQuery = ''"
+                    aria-label="Clear search"
+                >&#x2715;</button>
+            </div>
         </div>
 
         <div v-if="pending" class="loading">{{ lang === 'en' ? 'Loading news items...' : '加载新闻中...' }}</div>
@@ -214,6 +230,7 @@ const formatTimeUTC = (dateString: string) => {
 
 // Category filtering
 const selectedCategory = ref<string | null>(null)
+const searchQuery = ref('')
 
 // Extract unique topics from news items
 const categories = computed(() => {
@@ -229,8 +246,25 @@ const categories = computed(() => {
 // Filter news items by selected category
 const filteredNewsItems = computed(() => {
     if (!newsItems.value) return []
-    if (selectedCategory.value === null) return newsItems.value
-    return newsItems.value.filter(item => item.topic === selectedCategory.value)
+
+    let filtered = newsItems.value
+
+    if (selectedCategory.value !== null) {
+        filtered = filtered.filter(item => item.topic === selectedCategory.value)
+    }
+
+    const query = searchQuery.value.trim().toLowerCase()
+    if (query.length > 3) {
+        filtered = filtered.filter(item => {
+            const searchableText = [item.title]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase()
+            return searchableText.includes(query)
+        })
+    }
+
+    return filtered
 })
 
 // Get count of items in a category
@@ -530,6 +564,7 @@ h1 {
 .category-filter {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.75rem;
     padding: var(--spacing-lg);
     background: var(--color-bg-primary);
@@ -576,6 +611,67 @@ h1 {
 
 .filter-button.active .count {
     background: var(--opacity-overlay-light);
+}
+
+.search-box {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: var(--transition-fast);
+}
+
+.search-input.has-value {
+    padding-right: 2rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    background: var(--color-bg-primary);
+}
+
+.search-input::placeholder {
+    color: var(--color-text-muted);
+    font-weight: 400;
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    transition: var(--transition-fast);
+}
+
+.search-clear:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-hover);
 }
 
 /* Mobile Responsive Styles */
@@ -642,6 +738,12 @@ h1 {
     .filter-button {
         font-size: 0.85rem;
         padding: 0.4rem 0.75rem;
+    }
+
+    .search-box {
+        width: 100%;
+        flex-shrink: 1;
+        margin-left: 0;
     }
 
     .news-summary {
@@ -714,6 +816,11 @@ h1 {
 
     .filter-button .count {
         font-size: 0.75rem;
+    }
+
+    .search-input {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.6rem;
     }
 }
 </style>
