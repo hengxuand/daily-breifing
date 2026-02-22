@@ -7,9 +7,9 @@
                     <h1>Happened.info</h1>
                 </div>
                 <div class="lang-switcher">
-                    <NuxtLink :to="`/zh/${currentDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
+                    <NuxtLink :to="`/zh/${paramDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
                     </NuxtLink>
-                    <NuxtLink :to="`/en/${currentDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
+                    <NuxtLink :to="`/en/${paramDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
                     </NuxtLink>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                     </NuxtLink>
                 </div>
 
-                <NuxtLink :to="`/${lang}/${nextDate}`" class="nav-button" :class="{ disabled: isToday }">
+                <NuxtLink :to="`/${lang}/${nextDate}`" class="nav-button" :class="{ disabled: isFuture }">
                     {{ lang === 'en' ? 'Next Day →' : '后一天 →' }}
                 </NuxtLink>
             </div>
@@ -151,7 +151,7 @@ const translateTopic = (topic: string) => {
 }
 
 // Get the date from the route parameter
-const currentDate = computed(() => route.params.date as string)
+const paramDate = computed(() => route.params.date as string)
 
 // Get today's date in local time
 const todayDate = computed(() => {
@@ -161,18 +161,22 @@ const todayDate = computed(() => {
 
 // Check if current date is today
 const isToday = computed(() => {
-    return currentDate.value === todayDate.value
+    return paramDate.value === todayDate.value
+})
+
+const isFuture = computed(() => {
+    return paramDate.value > todayDate.value
 })
 
 // Calculate previous and next dates
 const previousDate = computed(() => {
-    const date = new Date(currentDate.value)
+    const date = new Date(paramDate.value)
     date.setDate(date.getDate() - 1)
     return date.toISOString().split('T')[0]
 })
 
 const nextDate = computed(() => {
-    const date = new Date(currentDate.value)
+    const date = new Date(paramDate.value)
     date.setDate(date.getDate() + 1)
     return date.toISOString().split('T')[0]
 })
@@ -180,7 +184,7 @@ const nextDate = computed(() => {
 // Format the current date for display
 const formattedCurrentDate = computed(() => {
     // Parse as UTC by appending 'Z'
-    const date = new Date(currentDate.value + 'T00:00:00Z')
+    const date = new Date(paramDate.value + 'T00:00:00Z')
     return date.toLocaleDateString(lang.value === 'en' ? 'en-US' : 'zh-CN', {
         weekday: 'long',
         year: 'numeric',
@@ -192,12 +196,12 @@ const formattedCurrentDate = computed(() => {
 
 // Fetch news items for the selected date
 const { data: newsItems, pending, error } = await useAsyncData(
-    `news-items-${currentDate.value}-${lang.value}`,
+    `news-items-${paramDate.value}-${lang.value}`,
     async () => {
         // Get start and end of the day in UTC (Canonical Timezone)
         // This ensures consistent Static Site Generation (SSG) results regardless of server/client location
-        const startOfDay = `${currentDate.value}T00:00:00.000Z`
-        const endOfDay = `${currentDate.value}T23:59:59.999Z`
+        const startOfDay = `${paramDate.value}T00:00:00.000Z`
+        const endOfDay = `${paramDate.value}T23:59:59.999Z`
 
         console.log(`Querying google_news_rss (language: ${lang.value}) -> Range: ${startOfDay} to ${endOfDay}`)
 
@@ -214,7 +218,7 @@ const { data: newsItems, pending, error } = await useAsyncData(
         return data as NewsItem[]
     },
     {
-        watch: [currentDate, lang]
+        watch: [paramDate, lang]
     }
 )
 
@@ -254,12 +258,14 @@ const filteredNewsItems = computed(() => {
     }
 
     const query = searchQuery.value.trim().toLowerCase()
-    if (query.length > 3) {
+    console.log(`Filtering news items with query: "${query}"`)
+    if (query.length >= 3) {
         filtered = filtered.filter(item => {
             const searchableText = [item.title]
                 .filter(Boolean)
                 .join(' ')
                 .toLowerCase()
+            console.log(`Checking item "${item.title}" against query "${query}"`)
             return searchableText.includes(query)
         })
     }
