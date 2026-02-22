@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { SpeedInsights } from '@vercel/speed-insights/nuxt'
 import { Analytics } from '@vercel/analytics/nuxt'
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 
 // Convert UTC times to relative time (e.g., "2 hours ago")
-onMounted(() => {
+onMounted(async () => {
+  // Wait for all child components to finish rendering
+  await nextTick()
+  
   const timeElements = document.querySelectorAll('time[data-utc-time]')
   
   const formatRelativeTime = (utcDateString: string, lang: string): string => {
