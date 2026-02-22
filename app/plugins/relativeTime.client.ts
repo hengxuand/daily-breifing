@@ -2,10 +2,11 @@
  * Client-only plugin that converts `<time data-utc-time="..." data-lang="...">` elements
  * into human-readable relative timestamps (e.g. "2 hours ago" / "2小时前").
  *
- * Runs on mount and watches for dynamically inserted elements via MutationObserver,
- * so it works seamlessly across page transitions.
+ * Conversion runs after each page finishes loading (via the `page:finish` hook) so it
+ * always fires after Vue has fully rendered and hydrated the page — matching the original
+ * `onMounted` timing that the inline `app.vue` logic relied on.
  */
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
     type TimeUnit = { divisor: number; en: string; zh: string }
 
     const TIME_UNITS: TimeUnit[] = [
@@ -31,26 +32,17 @@ export default defineNuxtPlugin(() => {
         return lang === 'zh' ? '刚刚' : 'just now'
     }
 
-    function convertTimeElement(el: Element): void {
-        const utcTime = el.getAttribute('data-utc-time')
-        const lang = el.getAttribute('data-lang') ?? 'en'
-        if (utcTime) el.textContent = formatRelativeTime(utcTime, lang)
+    function convertAllTimeElements(): void {
+        document.querySelectorAll<HTMLElement>('time[data-utc-time]').forEach((el) => {
+            const utcTime = el.getAttribute('data-utc-time')
+            const lang = el.getAttribute('data-lang') ?? 'en'
+            if (utcTime) el.textContent = formatRelativeTime(utcTime, lang)
+        })
     }
 
-    // Convert any elements already in the DOM
-    document.querySelectorAll('time[data-utc-time]').forEach(convertTimeElement)
+    // Run after the initial app mount (covers first page load / SSR hydration).
+    nuxtApp.hook('app:mounted', convertAllTimeElements)
 
-    // Watch for elements added during page transitions
-    const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-            for (const node of mutation.addedNodes) {
-                if (node.nodeType !== Node.ELEMENT_NODE) continue
-                const el = node as Element
-                if (el.matches('time[data-utc-time]')) convertTimeElement(el)
-                el.querySelectorAll('time[data-utc-time]').forEach(convertTimeElement)
-            }
-        }
-    })
-
-    observer.observe(document.body, { childList: true, subtree: true })
+    // Run after every client-side navigation so newly rendered items are converted.
+    nuxtApp.hook('page:finish', convertAllTimeElements)
 })
