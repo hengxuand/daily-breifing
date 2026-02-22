@@ -66,8 +66,8 @@
                         <h2 class="title">{{ item.title }}</h2>
                     </div>
                     <div class="summary-meta">
-                        <time v-if="item.pub_date" :datetime="item.pub_date">
-                            {{ formatTime(item.pub_date) }}
+                        <time v-if="item.pub_date" :datetime="item.pub_date" :data-utc-time="item.pub_date" :data-lang="lang">
+                            {{ formatTimeUTC(item.pub_date) }}
                         </time>
                         <div class="chevron">
                             <svg width="28" height="28" viewBox="0 0 20 20" fill="none"
@@ -202,12 +202,9 @@ const { data: newsItems, pending, error } = await useAsyncData(
     }
 )
 
-const formatTime = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-    })
+// Server-side placeholder (will be replaced with relative time on client)
+const formatTimeUTC = (dateString: string) => {
+    return '...'
 }
 
 // Category filtering
