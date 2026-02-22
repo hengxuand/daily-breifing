@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { SpeedInsights } from '@vercel/speed-insights/nuxt'
 import { Analytics } from '@vercel/analytics/nuxt'
-import { onMounted, nextTick } from 'vue'
+import { onMounted } from 'vue'
 
 // Convert UTC times to relative time (e.g., "2 hours ago")
-onMounted(async () => {
-  // Wait for all child components to finish rendering
-  await nextTick()
-  
-  const timeElements = document.querySelectorAll('time[data-utc-time]')
-  
+onMounted(() => {
   const formatRelativeTime = (utcDateString: string, lang: string): string => {
     const utcDate = new Date(utcDateString)
     const now = new Date()
@@ -47,8 +42,8 @@ onMounted(async () => {
     
     return lang === 'zh' ? '刚刚' : 'just now'
   }
-  
-  timeElements.forEach((el) => {
+
+  const convertTimeElement = (el: Element) => {
     const utcTime = el.getAttribute('data-utc-time')
     const lang = el.getAttribute('data-lang') || 'en'
     
@@ -56,6 +51,31 @@ onMounted(async () => {
     
     const relativeTime = formatRelativeTime(utcTime, lang)
     el.textContent = relativeTime
+  }
+  
+  // Convert any existing time elements
+  const timeElements = document.querySelectorAll('time[data-utc-time]')
+  timeElements.forEach(convertTimeElement)
+  
+  // Watch for new time elements added to the DOM (e.g., during page transitions)
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) { // Element node
+          const el = node as Element
+          if (el.matches('time[data-utc-time]')) {
+            convertTimeElement(el)
+          }
+          // Also check children
+          el.querySelectorAll('time[data-utc-time]').forEach(convertTimeElement)
+        }
+      })
+    })
+  })
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
   })
 })
 </script>
