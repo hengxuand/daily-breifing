@@ -1,4 +1,21 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+/**
+ * Generates prerender routes for the last `days` days in all supported languages.
+ * Pages beyond this window are generated on-demand via ISR.
+ */
+function getPrerenderRoutes(days = 7): string[] {
+  const routes: string[] = []
+  const today = new Date()
+  for (let i = 1; i <= days; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
+  }
+  return routes
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -33,21 +50,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: false,
-      routes: (() => {
-        // Pre-build only the last 7 days for faster initial deployment
-        // Other pages will be generated on-demand via ISR
-        const routes = []
-        const today = new Date()
-
-        // Pre-build last 7 days
-        for (let i = 1; i <= 7; i++) {
-          const d = new Date(today)
-          d.setDate(today.getDate() - i)
-          const dateStr = d.toISOString().split('T')[0]
-          routes.push(`/zh/${dateStr}`, `/en/${dateStr}`)
-        }
-        return routes
-      })()
+      routes: getPrerenderRoutes()
     }
   }
 })

@@ -83,7 +83,7 @@
                     </div>
                     <div class="summary-meta">
                         <time v-if="item.pub_date" :datetime="item.pub_date" :data-utc-time="item.pub_date" :data-lang="lang">
-                            {{ formatTimeUTC(item.pub_date) }}
+                            {{ displayTime(item.pub_date) }}
                         </time>
                         <div class="chevron">
                             <svg width="28" height="28" viewBox="0 0 20 20" fill="none"
@@ -111,99 +111,43 @@
 </template>
 
 <script setup lang="ts">
-interface NewsItem {
-    id: string
-    topic: string
-    language: string
-    title: string
-    source: string
-    pub_date: string
-    guid: string
-    link: string | null
-    description: string | null
-    created_at: string
-}
+import { useTopics } from '~/composables/useTopics'
+import type { NewsItem, SupportedLang } from '~/types'
+import { getTodayDateString, getOffsetDateString, formatDisplayDate, formatTimeUTC } from '~/utils/date'
 
-// Topic translation map
-const TOPIC_MAP_ZH: Record<string, string> = {
-    WORLD: "世界",
-    NATION: "国家",
-    BUSINESS: "商业",
-    TECHNOLOGY: "科技",
-    ENTERTAINMENT: "娱乐",
-    SCIENCE: "科学",
-    SPORTS: "体育",
-    HEALTH: "健康",
-}
+// ─── Route & reactive state ───────────────────────────────────────────────────
 
-const route = useRoute()
+const route    = useRoute()
 const supabase = useSupabaseClient()
 
-// Get language from route param
-const lang = computed(() => (route.params.lang === 'en' ? 'en' : 'zh'))
-
-// Translate topic name based on language
-const translateTopic = (topic: string) => {
-    if (lang.value === 'zh' && TOPIC_MAP_ZH[topic]) {
-        return TOPIC_MAP_ZH[topic]
-    }
-    return topic
-}
-
-// Get the date from the route parameter
+const lang      = computed<SupportedLang>(() => route.params.lang === 'en' ? 'en' : 'zh')
 const paramDate = computed(() => route.params.date as string)
 
-// Get today's date in local time
-const todayDate = computed(() => {
-    const d = new Date()
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-})
+const { translateTopic } = useTopics(lang)
 
-// Check if current date is today
-const isToday = computed(() => {
-    return paramDate.value === todayDate.value
-})
+// ─── Date helpers ─────────────────────────────────────────────────────────────
 
-const isFuture = computed(() => {
-    return paramDate.value > todayDate.value
-})
+/** Today's date as YYYY-MM-DD (local time). */
+const todayDate = computed(getTodayDateString)
 
-// Calculate previous and next dates
-const previousDate = computed(() => {
-    const date = new Date(paramDate.value)
-    date.setDate(date.getDate() - 1)
-    return date.toISOString().split('T')[0]
-})
+const isToday  = computed(() => paramDate.value === todayDate.value)
+const isFuture = computed(() => paramDate.value >  todayDate.value)
 
-const nextDate = computed(() => {
-    const date = new Date(paramDate.value)
-    date.setDate(date.getDate() + 1)
-    return date.toISOString().split('T')[0]
-})
+const previousDate        = computed(() => getOffsetDateString(paramDate.value, -1))
+const nextDate            = computed(() => getOffsetDateString(paramDate.value, +1))
+const formattedCurrentDate = computed(() =>
+    formatDisplayDate(paramDate.value, lang.value === 'en' ? 'en-US' : 'zh-CN')
+)
 
-// Format the current date for display
-const formattedCurrentDate = computed(() => {
-    // Parse as UTC by appending 'Z'
-    const date = new Date(paramDate.value + 'T00:00:00Z')
-    return date.toLocaleDateString(lang.value === 'en' ? 'en-US' : 'zh-CN', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'UTC' // Force UTC display to match the canonical content
-    })
-})
+// ─── Data fetching ────────────────────────────────────────────────────────────
 
-// Fetch news items for the selected date
 const { data: newsItems, pending, error } = await useAsyncData(
-    `news-items-${paramDate.value}-${lang.value}`,
+    `news-${paramDate.value}-${lang.value}`,
     async () => {
-        // Get start and end of the day in UTC (Canonical Timezone)
-        // This ensures consistent Static Site Generation (SSG) results regardless of server/client location
+        // Use explicit UTC boundaries so SSG output is consistent regardless of
+        // the server/client timezone.
         const startOfDay = `${paramDate.value}T00:00:00.000Z`
-        const endOfDay = `${paramDate.value}T23:59:59.999Z`
-
-        console.log(`Querying google_news_rss (language: ${lang.value}) -> Range: ${startOfDay} to ${endOfDay}`)
+        const endOfDay   = `${paramDate.value}T23:59:59.999Z`
 
         const { data, error } = await supabase
             .from('google_news_rss')
@@ -214,79 +158,56 @@ const { data: newsItems, pending, error } = await useAsyncData(
             .order('pub_date', { ascending: false })
 
         if (error) throw error
-
         return data as NewsItem[]
     },
-    {
-        watch: [paramDate, lang]
-    }
+    { watch: [paramDate, lang] }
 )
 
-// Server-side rendering: show UTC time as fallback
-const formatTimeUTC = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString(lang.value === 'en' ? 'en-US' : 'zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'UTC'
-    })
-}
+// ─── Time display ─────────────────────────────────────────────────────────────
 
-// Category filtering
+/** SSR fallback: displays raw UTC time until the client plugin converts it to a relative string. */
+const displayTime = (dateString: string) =>
+    formatTimeUTC(dateString, lang.value === 'en' ? 'en-US' : 'zh-CN')
+
+// ─── Category & search filtering ─────────────────────────────────────────────
+
 const selectedCategory = ref<string | null>(null)
-const searchQuery = ref('')
+const searchQuery      = ref('')
 
-// Extract unique topics from news items
-const categories = computed(() => {
+const categories = computed<string[]>(() => {
     if (!newsItems.value) return []
-    const uniqueTopics = new Set(
+    return [...new Set(
         newsItems.value
             .map(item => item.topic)
-            .filter((topic): topic is string => topic !== null && topic !== '')
-    )
-    return Array.from(uniqueTopics).sort()
+            .filter((t): t is string => Boolean(t))
+    )].sort()
 })
 
-// Filter news items by selected category
-const filteredNewsItems = computed(() => {
-    if (!newsItems.value) return []
-
-    let filtered = newsItems.value
+const filteredNewsItems = computed<NewsItem[]>(() => {
+    let items = newsItems.value ?? []
 
     if (selectedCategory.value !== null) {
-        filtered = filtered.filter(item => item.topic === selectedCategory.value)
+        items = items.filter(item => item.topic === selectedCategory.value)
     }
 
     const query = searchQuery.value.trim().toLowerCase()
-    console.log(`Filtering news items with query: "${query}"`)
     if (query.length >= 3) {
-        filtered = filtered.filter(item => {
-            const searchableText = [item.title]
-                .filter(Boolean)
-                .join(' ')
-                .toLowerCase()
-            console.log(`Checking item "${item.title}" against query "${query}"`)
-            return searchableText.includes(query)
-        })
+        items = items.filter(item => item.title.toLowerCase().includes(query))
     }
 
-    return filtered
+    return items
 })
 
-// Get count of items in a category
-const getCategoryCount = (category: string) => {
-    if (!newsItems.value) return 0
-    return newsItems.value.filter(item => item.topic === category).length
-}
+const getCategoryCount = (category: string): number =>
+    newsItems.value?.filter(item => item.topic === category).length ?? 0
 
-// Expanded state
-const expandedItems = ref<Set<string>>(new Set())
-const toggleItem = (id: string) => {
-    if (expandedItems.value.has(id)) {
-        expandedItems.value.delete(id)
-    } else {
-        expandedItems.value.add(id)
-    }
+// ─── Expand / collapse ────────────────────────────────────────────────────────
+
+const expandedItems = ref(new Set<string>())
+
+const toggleItem  = (id: string) => {
+    if (expandedItems.value.has(id)) expandedItems.value.delete(id)
+    else expandedItems.value.add(id)
 }
 const isExpanded = (id: string) => expandedItems.value.has(id)
 </script>

@@ -1,25 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { getTodayDateString } from '~/utils/date';
+import { detectBrowserLanguage } from '~/utils/language';
 
-// Detect browser language and redirect accordingly
-const getBrowserLanguage = () => {
-    if (typeof navigator !== 'undefined') {
-        const languages = navigator.languages || [navigator.language]
-        for (const lang of languages) {
-            if (lang.startsWith('zh')) return 'zh'
-            if (lang.startsWith('en')) return 'en'
-        }
-    }
-    // Default to English if no match found
-    console.warn('No matching language found, defaulting to English')
-    return 'en'
-}
-
+// Detect browser language and redirect to today's news page.
 onMounted(() => {
-    const d = new Date()
-    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    const browserLang = getBrowserLanguage()
-    navigateTo(`/${browserLang}/${today}`, { replace: true, external: false })
+    const lang = detectBrowserLanguage()
+    navigateTo(`/${lang}/${getTodayDateString()}`, { replace: true })
 })
 </script>
 
