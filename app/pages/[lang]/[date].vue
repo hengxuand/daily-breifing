@@ -202,9 +202,14 @@ const { data: newsItems, pending, error } = await useAsyncData(
     }
 )
 
-// Server-side placeholder (will be replaced with relative time on client)
+// Server-side rendering: show UTC time as fallback
 const formatTimeUTC = (dateString: string) => {
-    return '...'
+    const date = new Date(dateString)
+    return date.toLocaleTimeString(lang.value === 'en' ? 'en-US' : 'zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC'
+    })
 }
 
 // Category filtering
