@@ -11,6 +11,7 @@ const TOPIC_LABELS_ZH: Record<string, string> = {
     SCIENCE: '科学',
     SPORTS: '体育',
     HEALTH: '健康',
+    POLITICS: '政治',
 }
 
 /**
