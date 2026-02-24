@@ -19,13 +19,15 @@ function getPrerenderRoutes(days = 7): string[] {
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/supabase'],
+  modules: ['@nuxtjs/supabase', '@nuxt/icon'],
   css: ['~/assets/css/theme.css'],
   runtimeConfig: {
     public: {
       siteUrl: 'https://happened.info',
       // NOTE: Update this date whenever terms-of-service.vue or privacy-policy.vue are modified.
-      legalLastUpdated: 'February 21, 2026'
+      legalLastUpdated: 'February 21, 2026',
+      // Override with NUXT_PUBLIC_DEV_MODE=false to disable dev mode behaviour in staging/prod.
+      devMode: process.env.NODE_ENV !== 'production'
     }
   },
   app: {

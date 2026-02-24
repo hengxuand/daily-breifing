@@ -2,10 +2,12 @@
 import { ref, onMounted } from 'vue'
 
 const isVisible = ref(false)
+const STORAGE_KEY = 'cookie-consent'
+const { public: { devMode } } = useRuntimeConfig()
 
 onMounted(() => {
   // Check if user has already accepted cookies
-  const hasAccepted = localStorage.getItem('cookie-consent')
+  const hasAccepted = localStorage.getItem(STORAGE_KEY)
   if (!hasAccepted) {
     // Small delay so it doesn't pop up instantly
     setTimeout(() => {
@@ -15,7 +17,9 @@ onMounted(() => {
 })
 
 const acceptCookies = () => {
-  localStorage.setItem('cookie-consent', 'true')
+  if (!devMode) {
+    localStorage.setItem(STORAGE_KEY, 'true')
+  }
   isVisible.value = false
 }
 </script>
