@@ -16,10 +16,42 @@ function getPrerenderRoutes(days = 7): string[] {
   return routes
 }
 
+/**
+ * Generates sitemap URLs for the last `days` days in all supported languages.
+ * Includes lastmod, changefreq and priority hints for crawlers.
+ */
+function getSitemapUrls(days = 30) {
+  const urls = []
+  const today = new Date()
+  for (let i = 0; i <= days; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    const priority = i === 0 ? 1.0 : i <= 7 ? 0.8 : 0.5
+    const changefreq = i === 0 ? 'hourly' : i <= 7 ? 'daily' : 'weekly'
+    for (const lang of ['zh', 'en']) {
+      urls.push({
+        loc: `/${lang}/${dateStr}`,
+        lastmod: dateStr,
+        changefreq,
+        priority,
+        // hreflang alternates so the sitemap itself is bilingual-aware
+        alternatives: [
+          { hreflang: 'zh', href: `/zh/${dateStr}` },
+          { hreflang: 'zh-Hans', href: `/zh/${dateStr}` },
+          { hreflang: 'en', href: `/en/${dateStr}` },
+          { hreflang: 'x-default', href: `/en/${dateStr}` },
+        ]
+      })
+    }
+  }
+  return urls
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/supabase', '@nuxt/icon'],
+  modules: ['@nuxtjs/supabase', '@nuxt/icon', '@nuxtjs/sitemap'],
   css: ['~/assets/css/theme.css'],
   runtimeConfig: {
     public: {
@@ -30,6 +62,18 @@ export default defineNuxtConfig({
       devMode: process.env.NODE_ENV !== 'production'
     }
   },
+  // Required by @nuxtjs/sitemap to build absolute URLs
+  site: {
+    url: 'https://happened.info'
+  },
+
+  sitemap: {
+    // Provide the last 30 days of bilingual news pages
+    urls: getSitemapUrls(30),
+    // Also include static pages
+    includeAppSources: true,
+  },
+
   app: {
     head: {
       title: 'Happened.info',
