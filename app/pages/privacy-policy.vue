@@ -80,7 +80,7 @@ useHead({
                 <h2>8. Contact Us</h2>
                 <p>To exercise your privacy rights or ask questions, please contact us via the following methods:</p>
                 <ul>
-                    <li><strong>Email:</strong> privacy@happened.info</li>
+                    <li><strong>Email:</strong> shaundo7788@gmail.com</li>
                     <li><strong>GitHub:</strong> Open an issue in our official repository for public transparency.</li>
                 </ul>
             </section>

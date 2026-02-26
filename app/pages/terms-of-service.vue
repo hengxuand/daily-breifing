@@ -61,7 +61,7 @@ useHead({
                 <h2>8. Contact Information</h2>
                 <p>If you have any questions about these Terms of Service, please contact us at:</p>
                 <ul>
-                    <li><strong>Email:</strong> SHAUNDO7788@GMAIL.COM</li>
+                    <li><strong>Email:</strong> shaundo7788@gmail.com</li>
                 </ul>
             </section>
         </div>
