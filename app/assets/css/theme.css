@@ -14,6 +14,10 @@
   --color-text-tertiary: #666666;
   --color-text-muted: #999999;
 
+  /* Link / Accent Color (for text links — distinct from button backgrounds) */
+  --color-link: #000000;
+  --color-link-hover: #333333;
+
   /* Background Colors */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f5f5f5;
@@ -61,4 +65,64 @@
   /* Opacity */
   --opacity-overlay: rgba(0, 0, 0, 0.1);
   --opacity-overlay-light: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Dark Mode ──────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* Primary Colors */
+  --color-primary: #2c2c2c;
+  --color-primary-dark: #222222;
+  --color-primary-darker: #1a1a1a;
+  --color-primary-light: #888888;
+  --color-primary-alpha-20: rgba(255, 255, 255, 0.1);
+  --color-primary-alpha-30: rgba(255, 255, 255, 0.15);
+  --color-primary-alpha-15: rgba(255, 255, 255, 0.08);
+
+  /* Text Colors */
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #d0d0d0;
+  --color-text-tertiary: #a0a0a0;
+  --color-text-muted: #686868;
+
+  /* Link / Accent Color */
+  --color-link: #c8c8c8;
+  --color-link-hover: #f0f0f0;
+
+  /* Background Colors */
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1e1e1e;
+  --color-bg-tertiary: #2a2a2a;
+  --color-bg-hover: #2a2a2a;
+  --color-bg-detail: #1a1a1a;
+
+  /* Border Colors */
+  --color-border-primary: #383838;
+  --color-border-secondary: #2a2a2a;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #2c2c2c 0%, #3a3a3a 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #3a3a3a 0%, #444444 100%);
+  --gradient-bg: linear-gradient(135deg, #1a1a1a 0%, #1e1e1e 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* Status Colors */
+  --color-error: #f87171;
+  --color-error-bg: #2d1b1b;
+  --color-error-border: #5a2b2b;
+  --color-disabled: #444444;
+
+  /* Opacity */
+  --opacity-overlay: rgba(255, 255, 255, 0.12);
+  --opacity-overlay-light: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Base element defaults ───────────────────────────────────────────────────── */
+html {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }

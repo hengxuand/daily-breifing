@@ -3,14 +3,19 @@
         <div class="header">
             <div class="header-top">
                 <div class="logo">
-                    <img src="~/assets/images/logo.png" alt="Happened.info" />
+                    <img :src="isDark ? logoDark : logoLight" alt="Happened.info" />
                     <h1>Happened.info</h1>
                 </div>
-                <div class="lang-switcher">
-                    <NuxtLink :to="`/zh/${paramDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
-                    </NuxtLink>
-                    <NuxtLink :to="`/en/${paramDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
-                    </NuxtLink>
+                <div class="header-controls">
+                    <div class="lang-switcher">
+                        <NuxtLink :to="`/zh/${paramDate}`" class="lang-button" :class="{ active: lang !== 'en' }">中文
+                        </NuxtLink>
+                        <NuxtLink :to="`/en/${paramDate}`" class="lang-button" :class="{ active: lang === 'en' }">English
+                        </NuxtLink>
+                    </div>
+                    <button class="theme-toggle" @click="toggle" :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+                        <Icon :name="isDark ? 'lucide:sun' : 'lucide:moon'" size="18" />
+                    </button>
                 </div>
             </div>
 
@@ -114,6 +119,8 @@
 import { useSeoHead } from '~/composables/useSeoHead'
 import { useTopics } from '~/composables/useTopics'
 import type { NewsItem, SupportedLang } from '~/types'
+import logoLight from '~/assets/images/logo.svg'
+import logoDark from '~/assets/images/logo-dark.svg'
 import { getTodayDateString, getOffsetDateString, formatDisplayDate, formatTimeUTC } from '~/utils/date'
 
 // ─── Route & reactive state ───────────────────────────────────────────────────
@@ -212,6 +219,10 @@ const toggleItem  = (id: string) => {
 }
 const isExpanded = (id: string) => expandedItems.value.has(id)
 
+// ─── Theme ───────────────────────────────────────────────────────────────────
+
+const { isDark, toggle } = useTheme()
+
 // ─── SEO / hreflang ───────────────────────────────────────────────────────────
 
 useSeoHead(paramDate, lang, formattedCurrentDate)
@@ -236,6 +247,12 @@ useSeoHead(paramDate, lang, formattedCurrentDate)
     margin-bottom: 1.5rem;
 }
 
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -257,6 +274,27 @@ h1 {
 .lang-switcher {
     display: flex;
     gap: 0.5rem;
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary-light);
+    color: var(--color-text-primary);
 }
 
 .lang-button {
@@ -308,7 +346,7 @@ h1 {
 
 .today-link {
     font-size: 0.875rem;
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
     font-weight: 500;
 }
@@ -477,13 +515,13 @@ h1 {
 }
 
 .related-articles :deep(a) {
-    color: var(--color-primary-dark);
+    color: var(--color-link);
     text-decoration: none;
     font-weight: 500;
 }
 
 .related-articles :deep(a:hover) {
-    color: var(--color-primary);
+    color: var(--color-link-hover);
     text-decoration: underline;
 }
 
@@ -616,6 +654,11 @@ h1 {
         flex-direction: column;
         gap: 1rem;
         align-items: flex-start;
+    }
+
+    .header-controls {
+        width: 100%;
+        justify-content: center;
     }
 
     .logo {
